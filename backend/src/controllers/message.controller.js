@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 
+import cloudinary from "../lib/cloudinary.js";
+
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggeduserId = req.user._id;
@@ -55,7 +57,8 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    res.status(200).json({ message: "Message Sent" });
+    res.status(200).json({ newMessage: newMessage
+    });
   } catch (error) {
     console.error("Error in sendMessage route:", error.message);
     res.status(500).json({ message: "Server Error" });

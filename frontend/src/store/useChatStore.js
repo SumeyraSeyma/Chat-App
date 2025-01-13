@@ -25,34 +25,26 @@ export const useChatStore = create((set,get) => ({
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
-      const res = await axiosInstance.get(`messages/${userId}`);
-      set({ messages: res.data });
+      const res = await axiosInstance.get(`/messages/${userId}`);
+      set({ messages: Array.isArray(res.data.messages) ? res.data.messages : [] });
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
       set({ isMessagesLoading: false });
     }
   },
-
+  
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
-        const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
-        
-        if (res?.data) {
-            console.log("Server Response:", res.data);
-            // messages kontrolü yapıldı
-            const updatedMessages = Array.isArray(messages) ? [...messages, res.data] : [res.data];
-            set({ messages: updatedMessages });
-        } else {
-            toast.error("Invalid response from server.");
-        }
-        
+      const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
+      set({ messages: [...messages, res.data.newMessage] });
+      console.log("res.data:", res.data);
+      console.log("res.data.newMessage:", res.data.newMessage);
     } catch (error) {
-        console.error("Error object:", error);
-        toast.error(error?.response?.data?.message || "An error occurred.");
+      toast.error(error.response.data.message);
     }
-},
+  },
 
 
 
